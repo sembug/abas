@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <ul>
-      <li :class="{'active': tab.selected}" :key="tab.index" v-for="tab in tabs">
-        <a href="#" @click.prevent="changeTab(tab.index)">
+      <li :class="{'active': tab.selected}" :key="tab.index" v-for="(tab, index) in tabs">
+        <a href="#" @click.prevent="changeTab(index)">
           {{ tab.name }} 
-          <i v-if="tab.index != 0" @click.stop="removeTab(tab.index)">X</i>
+          <i v-if="index != 0" @click.stop="removeTab(index)">X</i>
         </a>
       </li>
     </ul>
     <div id="tabList">
-      <div :class="{'tabContent': true, 'active': tab.selected}" :key="tab.index" v-for="tab in tabs">
+      <div :class="{'tabContent': true, 'active': tab.selected}" :key="tab.name" v-for="tab in tabs">
         <component :is="tab.componentName"></component>
       </div>
     </div>
@@ -31,41 +31,30 @@ export default {
   },
   data () {
     return {
-      activeTab: 0,
-      indexControl: 0,
       tabs: [ 
-        { index: 0, name: 'Dashboard', componentName: 'HomePage', selected: true }
+        { name: 'Dashboard', componentName: 'HomePage', selected: true }
       ]
     }
   },
   mounted() {
     bus.$on('addTab', (tab) => {
-      this.indexControl += 1;
-      tab.index = this.indexControl;
-      for (var i = 0; i < this.tabs.length; i++) {
-        this.tabs[i].selected = (this.tabs[i].index == -1);
-      }
+      this.unSelectTabs();
       tab.selected = true;
       this.tabs.push(tab);
     });    
   },
   methods: {
+    unSelectTabs: function () {
+      this.tabs.forEach(currentTab => currentTab.selected = false);
+    },
     changeTab: function (tab)  {
-      for (var i = 0; i < this.tabs.length; i++) {
-        this.tabs[i].selected = (this.tabs[i].index == tab);
-      }
+      this.tabs.forEach(currentTab => currentTab.selected = false);
+      this.tabs[tab].selected = true;
     },
     removeTab(tab) {
-      var newTabs = this.tabs.filter(item => {
-        return item.index != tab;
-      });
-
-      for (var i = 0; i < newTabs.length; i++) {
-        newTabs[i].selected = (newTabs[i].index == 0);         
-      }
-
-      console.log(newTabs[0].selected);
-      this.tabs = newTabs;
+      this.tabs.splice(tab, 1);
+      this.unSelectTabs();
+      this.changeTab(0);
     }
   }
 }
