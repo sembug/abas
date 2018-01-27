@@ -4,7 +4,7 @@
       <li :class="{'active': tab.selected}" :key="tab.index" v-for="tab in tabs">
         <a href="#" @click.prevent="changeTab(tab.index)">
           {{ tab.name }} 
-          <i v-if="tab.index != 0" @click.prevent="removeTab(tab.index)">X</i>
+          <i v-if="tab.index != 0" @click.stop="removeTab(tab.index)">X</i>
         </a>
       </li>
     </ul>
@@ -56,13 +56,6 @@ export default {
       }
     },
     removeTab(tab) {
-      // var newTabs = [];
-      // for (var i = 0; i < this.tabs.length; i++) {
-      //   if (this.tabs[i].index != tab) {
-      //     this.tabs[i].selected = (this.tabs[i].index == 0);
-      //     newTabs.push(this.tabs[i]);
-      //   }         
-      // }
       var newTabs = this.tabs.filter(item => {
         return item.index != tab;
       });
